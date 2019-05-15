@@ -36,6 +36,7 @@ if root.findall('host') is not None:
 				hostname_text = address_text
 
 			ports = host_data.findall('ports')
+			os = host_data.find('os')
 			for port in ports:
 				port_list = port.findall('port')
 				if port_list:
@@ -46,25 +47,29 @@ if root.findall('host') is not None:
 						state_of_port = state_display.get('state')
 
 						if  state_of_port == "open":
+
+							oss_version = os.findall('osmatch')
+							for os_version in oss_version:
+								os_version_text = os_version.get('name')
+								break
+
 							service = port_instance.find('service')
 							service_name = service.get('name')
 							service_product = service.get('product')
 							service_version = service.get('version')
 							service_os = service.get('ostype')
-							
 							try:
-								list_results = [port_id, service_name, service_product, service_version]
+								list_results = [service_os, port_id, service_name, service_product, os_version_text]
 								if any(string_compare in s for s in list_results):
 									if count == 0:
 										print "\n%s (%s)." % (address_text,hostname_text)
 										count+=1
 
-									print "%s\t%s\t%s\t%s;" % (port_id,service_name,service_product,service_version)
+									print "%s\t%s\t%s\t%s\t%s" % (port_id,service_name,service_product,service_version, os_version_text)
 								else:
 									pass
 							except:
 								pass
-
 						else:
 							pass
 				else:
